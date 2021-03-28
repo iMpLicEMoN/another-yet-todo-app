@@ -1,2 +1,2 @@
 # Another yet todo application
-Backend URL - config.js
+Backend config - src/api/index.ts

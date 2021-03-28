@@ -2,8 +2,10 @@
 /* eslint-disable */
 "use strict";
 
+
 var beType = 'https';
 var beIPAddress = 'uxcandy.com';
+export var beEnv = 'development'
 export var bePort = '443';
 export var beServiceNames = {
 	getTasks: '~shapoval/test-task-backend/v2/?developer=Name'
