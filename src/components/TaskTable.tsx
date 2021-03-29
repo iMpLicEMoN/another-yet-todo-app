@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store/reducers'
+import { RootState } from '../store/reducers'
 import { Table, Avatar } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import 'antd/dist/antd.css';
-import { Task, DirectionTypes } from '../../types'
-import { getTasks } from '../../api'
+import { Task, DirectionTypes } from '../types'
+import { getTasks } from '../api'
 
 
 const columns: ColumnsType<Task> = [
