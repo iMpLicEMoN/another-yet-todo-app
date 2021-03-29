@@ -1,37 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/reducers'
-import { Table, Avatar } from 'antd';
+import React from 'react';
+import { Table, Avatar, Badge } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import 'antd/dist/antd.css';
-import { Task, DirectionTypes } from '../types'
-import { getTasks } from '../api'
-
+import { Task } from '../types'
 
 const columns: ColumnsType<Task> = [
   {
     key: 'id',
     title: '№',
     dataIndex: 'id',
-    sorter: true
+    sorter: true,
+    width: 60,
   },
   {
     key: 'username',
     title: 'User',
     dataIndex: 'username',
     sorter: true,
+    width: 100,
     render: (prop, item) =>
       <div><Avatar
         shape="square"
         size={64}
         style={{ margin: 10 }}
-        src={item.image_path} />{prop}</div>
+        src={item.image_path} />
+        <div style={{ margin: "0 10px" }}>
+          {prop}
+        </div>
+      </div>
   },
   {
     key: 'email',
     title: 'Email',
     dataIndex: 'email',
-    sorter: true
+    sorter: true,
+    width: 200,
   },
   {
     key: 'text',
@@ -43,34 +46,43 @@ const columns: ColumnsType<Task> = [
     key: 'status',
     title: 'Status',
     dataIndex: 'status',
-    sorter: true
+    sorter: true,
+    width: 150,
+    render: (prop) =>
+      <Badge color={StatusColor[prop]} text={StatusText[prop]} />
   }
 ];
 
-function TaskTable() {
-  const dispatch = useDispatch();
-  const $tasks = useSelector<RootState, Task[]>((state) => state.taskState.tasks);
-  const $page = useSelector<RootState, number>((state) => state.taskState.page);
-  const $total = useSelector<RootState, number>((state) => state.taskState.total_task_count);
+enum StatusText {
+  "Incomplete" = 0,
+  "Incomplete, edited" = 1,
+  "Done" = 10,
+  "Done, edited" = 11,
+}
 
-  const onTableChange = (pagination: any, filters: any, sorter: any) => {
-    const newPage: number = pagination.current || 1,
-      newField: string = sorter.field || "id",
-      newDirection: DirectionTypes = sorter.order?
-        sorter.order.includes(DirectionTypes.asc)
-         ? DirectionTypes.asc 
-         : DirectionTypes.desc
-         : DirectionTypes.asc
-    setBusy(true);
-    dispatch(getTasks(newPage, newField, newDirection,()=>{setBusy(false)}));
-  }
+enum StatusColor {
+  "blue" = 0,
+  "cyan" = 1,
+  "green" = 10,
+  "lime" = 11,
+}
 
-  let [busy, setBusy] = useState<boolean>(false);
 
-  useEffect(() => {
-    setBusy(true);
-    dispatch(getTasks(1,"id",DirectionTypes.asc,()=>{setBusy(false)}))
-  }, [])
+interface TaskTableType {
+  tasks: Task[];
+  page: number;
+  total: number;
+  busy: boolean;
+  onTableChange: (pagination: any, filters: any, sorter: any) => void;
+}
+
+const TaskTable: React.FC<TaskTableType> = ({
+  tasks,
+  page,
+  total,
+  busy,
+  onTableChange
+}) => {
 
   return (
     <Table<Task>
@@ -79,8 +91,8 @@ function TaskTable() {
       onChange={onTableChange}
       pagination={{
         defaultPageSize: 3,
-        current: $page,
-        total: $total,
+        current: page,
+        total: total,
         hideOnSinglePage: true,
         showQuickJumper: true,
         showSizeChanger: false,
@@ -89,7 +101,7 @@ function TaskTable() {
       bordered
       loading={busy}
       sortDirections={['ascend', 'descend', 'ascend']}
-      dataSource={$tasks} >
+      dataSource={tasks} >
     </Table>
   );
 }

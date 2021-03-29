@@ -2,6 +2,7 @@ export enum ActionTypes {
 	TASK_CREATE = "TASK_CREATE",
 	TASK_EDIT = "TASK_EDIT",
 	TASKS_GET = "TASKS_GET",
+	USER_LOGIN = "USER_LOGIN",
 }
 
 export enum DirectionTypes{
@@ -22,7 +23,12 @@ export interface TasksState {
 
 export interface TaskAction{
 	type: ActionTypes;
-	payload?: TasksState;
+	payload?: any;
+}
+
+export interface Credentials{
+	login: string;
+	password: any;
 }
 
 export interface Task {

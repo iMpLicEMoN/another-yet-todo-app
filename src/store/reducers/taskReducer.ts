@@ -7,7 +7,7 @@ const initState = {
 } as TasksState
 
 export const taskReducer = (state = initState, action:TaskAction):TasksState => {
-console.log("REDUCE",action)
+	console.log(action)
 	switch (action.type) {   
 		case ActionTypes.TASKS_GET: return {
 			...state,
@@ -19,4 +19,5 @@ console.log("REDUCE",action)
 		default: 
 			return state;
 	}
+	
 }

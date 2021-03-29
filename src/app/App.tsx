@@ -1,12 +1,44 @@
-import React from "react";
-import { Layout, Menu, Space } from "antd";
+import React, { useEffect } from "react";
+import { Layout, Menu, Alert, Button } from "antd";
 import TaskTable from "../components/TaskTable";
+import AlertMessage from "../components/AlertMessage";
 import NewTaskForm from "../components/NewTaskForm";
 import LoginForm from "../components/LoginForm"
-import { Button } from "antd";
+import { getTasks, createTask, editTask, login } from '../api'
+import { Task, DirectionTypes } from '../types'
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../store/reducers'
 
 function App() {
-  const { Header, Content, Footer } = Layout;
+  const { Header, Content } = Layout;
+  const dispatch = useDispatch();
+  const $tasks = useSelector<RootState, Task[]>((state) => state.taskState.tasks);
+  const $page = useSelector<RootState, number>((state) => state.taskState.page);
+  const $total = useSelector<RootState, number>((state) => state.taskState.total_task_count);
+
+  const onTableChange = (pagination: any, filters: any, sorter: any) => {
+    const newPage: number = pagination.current || 1,
+      newField: string = sorter.field || "id",
+      newDirection: DirectionTypes = sorter.order ?
+        sorter.order.includes(DirectionTypes.asc)
+          ? DirectionTypes.asc
+          : DirectionTypes.desc
+        : DirectionTypes.asc
+    // setBusy(true);
+    dispatch(getTasks(newPage, newField, newDirection, () => {
+      // setBusy(false)
+    }));
+  }
+
+  // let [busy, setBusy] = useState<boolean>(false);
+
+  useEffect(() => {
+    // setBusy(true);
+    dispatch(getTasks(1, "id", DirectionTypes.asc, () => {
+      // setBusy(false)
+    }))
+  }, [])
+
   return (
     <Layout>
       <Header>
@@ -24,10 +56,26 @@ function App() {
         >
           Create Task
         </Button>
-        {/* <NewTaskForm visible={true} onCreate={() => {}} onCancel={() => {}} />
-        <LoginForm visible={true} onCreate={() => {}} onCancel={() => {}} /> */}
-        <TaskTable />
-        
+        {/* <NewTaskForm visible={true} onCreate={() => {}} onCancel={() => {}} /> */}
+        {/* <LoginForm visible={true} onCreate={() => {}} onCancel={() => {}} /> */}
+
+        <TaskTable
+          tasks={$tasks}
+          page={$page}
+          total={$total}
+          busy={false}
+          onTableChange={onTableChange} />
+        {/* <Alert
+          style={{
+            position: "fixed",
+            top: "80px",
+            left: "33%",
+            width: "33%"
+          }}
+          message="Success"
+          type="success"
+          showIcon={true}
+        /> */}
       </Content>
     </Layout>
   );
