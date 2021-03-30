@@ -5,7 +5,7 @@ const beType = 'https';
 const beIPAddress = 'uxcandy.com';
 export const beEnv = 'development'
 export const bePort = '443';
-const beDevName = 'cvb';
+const beDevName = 'Name';
 export const beServiceNames = {
 	getTasks: '/',
 	createTask: '/create',
