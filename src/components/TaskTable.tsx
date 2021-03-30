@@ -67,6 +67,7 @@ enum StatusColor {
   "lime" = 11,
 }
 
+type status = 0|1|10|11;
 
 interface TaskTableType {
   tasks: Task[];
@@ -86,6 +87,7 @@ const TaskTable: React.FC<TaskTableType> = ({
 
   return (
     <Table<Task>
+      rowKey='id'
       columns={columns}
       size="small"
       onChange={onTableChange}

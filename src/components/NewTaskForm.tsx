@@ -1,15 +1,10 @@
 import React, { useState } from "react";
-import { Button, Modal, Form, Input, Radio } from "antd";
-
-interface Values {
-  title: string;
-  description: string;
-  modifier: string;
-}
+import { Modal, Form, Input } from "antd";
+import { NewTaskValues } from "../types";
 
 interface NewTaskForm {
   visible: boolean;
-  onCreate: (values: Values) => void;
+  onCreate: (values: NewTaskValues) => void;
   onCancel: () => void;
 }
 
@@ -26,7 +21,7 @@ const NewTaskForm: React.FC<NewTaskForm> = ({
       okText="Create"
       cancelText="Cancel"
       onCancel={onCancel}
-      onOk={() => {
+      onOk={(event) => {
         form
           .validateFields()
           .then((values) => {

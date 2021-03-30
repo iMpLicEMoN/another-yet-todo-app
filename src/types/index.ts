@@ -5,6 +5,8 @@ export enum ActionTypes {
 	USER_LOGIN = "USER_LOGIN",
 }
 
+export type statusType = 0|1|10|11;
+
 export enum DirectionTypes{
 	asc = "ascend",
 	desc = "descend",
@@ -44,4 +46,10 @@ export interface Task {
 export type TaskSort = {
 	field: string;
 	direction: string;
+  }
+
+export interface NewTaskValues {
+	username: string;
+	email: string;
+	text: string;
   }

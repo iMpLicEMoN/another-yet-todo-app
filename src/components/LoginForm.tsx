@@ -3,7 +3,7 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 interface LoginForm {
   visible: boolean;
-  onCreate: () => void;
+  onLogin: (values:any) => void;
   onCancel: () => void;
 }
 
@@ -11,13 +11,10 @@ const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
-const tailLayout = {
-  wrapperCol: { offset: 8, span: 16 },
-};
 
 const LoginForm:React.FC<LoginForm> = ({
   visible,
-  onCreate,
+  onLogin,
   onCancel,
 }) => {
   const onFinish = (values: any) => {
@@ -28,6 +25,7 @@ const LoginForm:React.FC<LoginForm> = ({
     console.log('Failed:', errorInfo);
   };
 
+  const [form] = Form.useForm();
   return (
     <Modal
     visible={visible}
@@ -35,17 +33,26 @@ const LoginForm:React.FC<LoginForm> = ({
     cancelText="Cancel"
     width={350}
     okButtonProps={{form:'login-form', htmlType: 'submit'}}
-    onCancel={() => {
-        
-    }}
+    onCancel={onCancel}
     footer={[
-      <Button key="submit" type="primary" loading={true} onClick={()=>{}}>
+      <Button key="submit" type="primary" loading={false} onClick={(event) => {
+        form
+          .validateFields()
+          .then((values) => {
+            form.resetFields();
+            onLogin(values);
+          })
+          .catch((info) => {
+            console.log("Validate Failed:", info);
+          });
+      }}>
         Login
       </Button>,
     ]}
   >
     <Form
       {...layout}
+      form={form}
       id="login-form"
       name="basic"
       initialValues={{ remember: true }}
@@ -68,12 +75,6 @@ const LoginForm:React.FC<LoginForm> = ({
         <Input.Password />
       </Form.Item>
 
-
-      {/* <Form.Item {...tailLayout}>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-      </Form.Item> */}
     </Form>
     </Modal>
   );
