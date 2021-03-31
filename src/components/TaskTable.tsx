@@ -3,6 +3,7 @@ import { Table, Avatar, Badge } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import 'antd/dist/antd.css';
 import { Task } from '../types'
+import { StatusText, StatusColor } from "../types"
 
 const columns: ColumnsType<Task> = [
   {
@@ -53,20 +54,6 @@ const columns: ColumnsType<Task> = [
   }
 ];
 
-enum StatusText {
-  "Incomplete" = 0,
-  "Incomplete, edited" = 1,
-  "Done" = 10,
-  "Done, edited" = 11,
-}
-
-enum StatusColor {
-  "blue" = 0,
-  "cyan" = 1,
-  "green" = 10,
-  "lime" = 11,
-}
-
 type status = 0|1|10|11;
 
 interface TaskTableType {
@@ -75,6 +62,7 @@ interface TaskTableType {
   total: number;
   busy: boolean;
   onTableChange: (pagination: any, filters: any, sorter: any) => void;
+  onRow: (record:any, rowIndex:any) => any;
 }
 
 const TaskTable: React.FC<TaskTableType> = ({
@@ -82,7 +70,8 @@ const TaskTable: React.FC<TaskTableType> = ({
   page,
   total,
   busy,
-  onTableChange
+  onTableChange,
+  onRow,
 }) => {
 
   return (
@@ -90,6 +79,7 @@ const TaskTable: React.FC<TaskTableType> = ({
       rowKey='id'
       columns={columns}
       size="small"
+      onRow={onRow}
       onChange={onTableChange}
       pagination={{
         defaultPageSize: 3,

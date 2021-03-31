@@ -1,11 +1,12 @@
 import { DirectionTypes, DirectionTypesShort, statusType, Credentials } from '../types'
 import { getTasksAction, createTaskAction, editTaskAction, loginAction, logoutAction } from '../store/actions'
+import { loadState, saveState } from "../utils/localStorage";
 
 const beType = 'https';
 const beIPAddress = 'uxcandy.com';
 export const beEnv = 'development'
 export const bePort = '443';
-const beDevName = 'Name';
+const beDevName = 'asd';
 export const beServiceNames = {
 	getTasks: '/',
 	createTask: '/create',
@@ -57,15 +58,16 @@ export const createTask = (form:FormData, callback?:any): any => {
 	}
 }
 
-export const editTask = (text:string, status:statusType, callback?:any): any => {
+export const editTask = (id:string, form:FormData, callback?:any): any => {
 	return (dispatch: any) => {
-		fetch(`${beString}${beServiceNames.editTask}?developer=${beDevName}`, {
+		fetch(`${beString}${beServiceNames.editTask}/${id}?developer=${beDevName}`, {
 			method: 'POST',
 			mode: 'cors',
 			cache: 'no-cache',
 			credentials: 'same-origin',
 			redirect: 'follow',
-			referrerPolicy: 'no-referrer'
+			referrerPolicy: 'no-referrer',
+			body: form
 		}).then((res) => {return res.json();})
 		.then((data) => {
 			if (callback) callback(data);
@@ -85,7 +87,8 @@ export const login = (form: FormData, callback?:any): any => {
 			body: form
 		}).then((res) => {return res.json();})
 		.then((data) => {
-			dispatch(loginAction({token: data.message.token, username: form.get("username")}))
+
+			data.message.token && dispatch(loginAction({token: data.message.token, username: form.get("username")}))
 			if (callback) callback(data);
 		})
 	}
@@ -93,7 +96,8 @@ export const login = (form: FormData, callback?:any): any => {
 
 export const logout = (callback?:any): any => {
 	return (dispatch: any) => {
-		dispatch(logoutAction())
+		dispatch(logoutAction());
+		saveState({});
 		if (callback) callback();
 	}
 }

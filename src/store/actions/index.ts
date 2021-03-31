@@ -14,11 +14,11 @@ export const createTaskAction = (payload:Task) => {
 	} as TaskAction
 }
 
-export const editTaskAction = (payload:Task) => {
+export const editTaskAction = (payload:any) => {
 	return {
 		type: ActionTypes.TASK_EDIT,
 		payload: payload
-	} as TaskAction
+	}
 }
 
 export const loginAction = (payload:any) => {

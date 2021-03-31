@@ -8,6 +8,20 @@ export enum ActionTypes {
 
 export type statusType = 0|1|10|11;
 
+export enum StatusText {
+	"Incomplete" = 0,
+	"Incomplete, edited" = 1,
+	"Done" = 10,
+	"Done, edited" = 11,
+  }
+  
+export enum StatusColor {
+	"blue" = 0,
+	"cyan" = 1,
+	"green" = 10,
+	"lime" = 11,
+  }
+
 export enum DirectionTypes{
 	asc = "ascend",
 	desc = "descend",

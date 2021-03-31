@@ -3,13 +3,15 @@ import { Layout, Alert, Button, Menu } from "antd";
 import TaskTable from "../components/TaskTable";
 import AlertMessage from "../components/AlertMessage";
 import NewTaskForm from "../components/NewTaskForm";
+import EditTaskForm from "../components/EditTaskForm";
 import LoginForm from "../components/LoginForm"
 import { getTasks, createTask, editTask, login, logout, tokenLifeTime } from '../api'
-import { loginAction } from '../store/actions'
+import { loginAction, editTaskAction } from '../store/actions'
 import { Task, DirectionTypes, NewTaskValues } from '../types'
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/reducers'
 import { loadState, saveState } from "../utils/localStorage";
+import { destroyFns } from "antd/lib/modal/Modal";
 
 function App() {
   const { Header, Content } = Layout;
@@ -18,9 +20,11 @@ function App() {
   const $page = useSelector<RootState, number>((state) => state.taskState.page);
   const $total = useSelector<RootState, number>((state) => state.taskState.total_task_count);
   const $loginState = useSelector<RootState, any>((state) => state.loginState);
+  const $editState = useSelector<RootState, any>((state) => state.editState);
   let [busy, setBusy] = useState<boolean>(false);
   let [loginModal, setLoginModal] = useState<boolean>(false);
   let [newTaskModal, setNewTaskModal] = useState<boolean>(false);
+  let [editTaskModal, setEditTaskModal] = useState<boolean>(false);
 
   const onTableChange = (pagination: any, filters: any, sorter: any) => {
     const newPage: number = pagination.current || 1,
@@ -44,6 +48,16 @@ function App() {
     form.append("email", email);
     form.append("text", text);
     dispatch(createTask(form,()=>{dispatch(getTasks($page));setBusy(false)}));
+  }
+
+  const onEditTask = ({text, status}:any)=>{
+    setBusy(true);
+    setEditTaskModal(false);
+    const form = new FormData();
+    form.append("text", text);
+    form.append("status", status);
+    form.append("token", $loginState.token);
+    dispatch(editTask($editState.id,form,()=>{dispatch(getTasks($page));setBusy(false)}));
   }
 
   const onLogin = (values:any) => {
@@ -96,16 +110,32 @@ function App() {
           visible={newTaskModal} 
           onCreate={onCreateTask} 
           onCancel={() => {setNewTaskModal(false)}} />
+
         <LoginForm 
           visible={loginModal} 
           onLogin={onLogin} 
           onCancel={() => {setLoginModal(false)}} />
 
+        <EditTaskForm 
+          visible={ editTaskModal }
+          data={$editState}
+          onSubmit={onEditTask}
+          busy={busy}
+          onCancel={() => {setEditTaskModal(false);}} />
         <TaskTable
           tasks={$tasks}
           page={$page}
           total={$total}
           busy={busy}
+          onRow={(record, rowIndex)=>{
+            if ($loginState.login)
+            return {
+              onClick: (event:Event)=>{
+                dispatch(editTaskAction(record))
+                setEditTaskModal(true);
+              }
+            }
+          }}
           onTableChange={onTableChange} />
         {/* <Alert
           style={{
