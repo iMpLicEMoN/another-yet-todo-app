@@ -1,4 +1,4 @@
-import {Credentials, Task, TasksState, TaskAction, ActionTypes} from '../../types';
+import {Task, TasksState, TaskAction, ActionTypes} from '../../types';
 
 export const getTasksAction = (payload:TasksState) => {
 	return {
@@ -24,6 +24,13 @@ export const editTaskAction = (payload:Task) => {
 export const loginAction = (payload:any) => {
 	return {
 		type: ActionTypes.USER_LOGIN,
+		payload: payload
+	}
+}
+
+export const logoutAction = (payload?:any) => {
+	return {
+		type: ActionTypes.USER_LOGOUT,
 		payload: payload
 	}
 }

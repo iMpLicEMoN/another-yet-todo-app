@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Layout, Menu, Alert, Button } from "antd";
+import { Layout, Alert, Button, Menu } from "antd";
 import TaskTable from "../components/TaskTable";
 import AlertMessage from "../components/AlertMessage";
 import NewTaskForm from "../components/NewTaskForm";
 import LoginForm from "../components/LoginForm"
-import { getTasks, createTask, editTask, login, tokenLifeTime } from '../api'
+import { getTasks, createTask, editTask, login, logout, tokenLifeTime } from '../api'
 import { loginAction } from '../store/actions'
 import { Task, DirectionTypes, NewTaskValues } from '../types'
 import { useSelector, useDispatch } from 'react-redux';
@@ -38,6 +38,7 @@ function App() {
 
   const onCreateTask = ({username, email, text}:NewTaskValues)=>{
     setBusy(true);
+    setNewTaskModal(false);
     const form = new FormData();
     form.append("username", username);
     form.append("email", email);
@@ -50,7 +51,8 @@ function App() {
     form.append("username", values.username);
     form.append("password", values.password);
     dispatch(login(form, (data:any)=>{
-      saveState({username: values.username, token: data.message.token, timeStamp: new Date().getTime()})
+      saveState({username: values.username, token: data.message.token, timeStamp: new Date().getTime()});
+      setLoginModal(false);
     }))
   }
 
@@ -66,7 +68,6 @@ function App() {
       } else {
         saveState({});
       }
-
     }
     
   }, [])
@@ -74,9 +75,14 @@ function App() {
   return (
     <Layout>
       <Header>
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
-          <Menu.Item key="1" onClick={()=>{setLoginModal(true)}}>{$loginState.login||"Sign Up"}</Menu.Item>
-        </Menu>
+      <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
+       {$loginState.login ? 
+        <Menu.Item key="1">{$loginState.login}</Menu.Item>
+        :<Menu.Item key="1" onClick={()=>{setLoginModal(true)}}>{"Sign Up"}</Menu.Item>}
+
+        {$loginState.login && 
+          <Menu.Item key="2" onClick={()=>{dispatch(logout(()=>{setLoginModal(false)}))}}>Logout</Menu.Item>}
+       </Menu>
       </Header>
       <Content style={{ margin: "20px 20px" }}>
         <Button

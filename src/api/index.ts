@@ -1,5 +1,5 @@
 import { DirectionTypes, DirectionTypesShort, statusType, Credentials } from '../types'
-import { getTasksAction, createTaskAction, editTaskAction, loginAction } from '../store/actions'
+import { getTasksAction, createTaskAction, editTaskAction, loginAction, logoutAction } from '../store/actions'
 
 const beType = 'https';
 const beIPAddress = 'uxcandy.com';
@@ -88,5 +88,12 @@ export const login = (form: FormData, callback?:any): any => {
 			dispatch(loginAction({token: data.message.token, username: form.get("username")}))
 			if (callback) callback(data);
 		})
+	}
+}
+
+export const logout = (callback?:any): any => {
+	return (dispatch: any) => {
+		dispatch(logoutAction())
+		if (callback) callback();
 	}
 }

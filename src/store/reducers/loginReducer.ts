@@ -16,6 +16,10 @@ export const loginReducer = (state = initState, action:any) => {
 			timeStamp: action.payload?.timeStamp,
 		}
 
+		case ActionTypes.USER_LOGOUT: return {
+			...initState,
+		}
+
 		default: 
 			return state;
 	}
