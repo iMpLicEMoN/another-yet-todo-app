@@ -6,7 +6,7 @@ const beType = 'https';
 const beIPAddress = 'uxcandy.com';
 export const beEnv = 'development'
 export const bePort = '443';
-const beDevName = 'asd';
+const beDevName = 'Mukhtar';
 export const beServiceNames = {
 	getTasks: '/',
 	createTask: '/create',
@@ -87,8 +87,10 @@ export const login = (form: FormData, callback?:any): any => {
 			body: form
 		}).then((res) => {return res.json();})
 		.then((data) => {
-
-			data.message.token && dispatch(loginAction({token: data.message.token, username: form.get("username")}))
+			if (data.message.token){
+			 saveState({username: form.get("username"), token: data.message.token, timeStamp: new Date().getTime()});
+			 dispatch(loginAction({token: data.message.token, username: form.get("username")}))
+			}
 			if (callback) callback(data);
 		})
 	}

@@ -11,7 +11,6 @@ import { Task, DirectionTypes, NewTaskValues } from '../types'
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/reducers'
 import { loadState, saveState } from "../utils/localStorage";
-import { destroyFns } from "antd/lib/modal/Modal";
 
 function App() {
   const { Header, Content } = Layout;
@@ -65,12 +64,11 @@ function App() {
     form.append("username", values.username);
     form.append("password", values.password);
     dispatch(login(form, (data:any)=>{
-      saveState({username: values.username, token: data.message.token, timeStamp: new Date().getTime()});
       setLoginModal(false);
     }))
   }
 
-  useEffect(() => {
+  const tokenChecking = () => {
     setBusy(true);
     dispatch(getTasks(1, "id", DirectionTypes.asc, () => {setBusy(false)}))
     const localStorage = loadState();
@@ -83,7 +81,10 @@ function App() {
         saveState({});
       }
     }
-    
+  }
+
+  useEffect((callback?:any) => {
+    tokenChecking();
   }, [])
 
   return (
