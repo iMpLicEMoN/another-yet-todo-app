@@ -34,3 +34,10 @@ export const logoutAction = (payload?:any) => {
 		payload: payload
 	}
 }
+
+export const alertAction = (payload?:any) => {
+	return {
+		type: ActionTypes.ALERT_SHOW,
+		payload: payload
+	}
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Radio, Badge } from "antd";
 import { StatusText, StatusColor } from "../types"
 
@@ -23,8 +23,12 @@ const EditTaskForm: React.FC<EditTaskForm> = ({
   onSubmit,
   onCancel,
 }) => {
+
   const [form] = Form.useForm();
-  form.setFieldsValue(data);
+  useEffect(()=>{
+    form.setFieldsValue(data);
+  },[data])
+  
   return (
     <Modal
       visible={visible}

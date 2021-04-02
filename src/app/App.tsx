@@ -6,7 +6,7 @@ import NewTaskForm from "../components/NewTaskForm";
 import EditTaskForm from "../components/EditTaskForm";
 import LoginForm from "../components/LoginForm"
 import { getTasks, createTask, editTask, login, logout, tokenLifeTime } from '../api'
-import { loginAction, editTaskAction } from '../store/actions'
+import { loginAction, editTaskAction, alertAction } from '../store/actions'
 import { Task, DirectionTypes, NewTaskValues } from '../types'
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/reducers'
@@ -20,6 +20,8 @@ function App() {
   const $total = useSelector<RootState, number>((state) => state.taskState.total_task_count);
   const $loginState = useSelector<RootState, any>((state) => state.loginState);
   const $editState = useSelector<RootState, any>((state) => state.editState);
+  const $alertState = useSelector<RootState, any>((state) => state.alertState);
+
   let [busy, setBusy] = useState<boolean>(false);
   let [loginModal, setLoginModal] = useState<boolean>(false);
   let [newTaskModal, setNewTaskModal] = useState<boolean>(false);
@@ -35,7 +37,7 @@ function App() {
         : DirectionTypes.asc
     setBusy(true);
     dispatch(getTasks(newPage, newField, newDirection, () => {
-      setBusy(false)
+      setBusy(false);
     }));
   }
 
@@ -46,7 +48,10 @@ function App() {
     form.append("username", username);
     form.append("email", email);
     form.append("text", text);
-    dispatch(createTask(form,()=>{dispatch(getTasks($page));setBusy(false)}));
+    dispatch(createTask(form,()=>{
+      dispatch(getTasks($page));
+      setBusy(false);
+    }));
   }
 
   const onEditTask = ({text, status}:any)=>{
@@ -56,7 +61,10 @@ function App() {
     form.append("text", text);
     form.append("status", status);
     form.append("token", $loginState.token);
-    dispatch(editTask($editState.id,form,()=>{dispatch(getTasks($page));setBusy(false)}));
+    dispatch(editTask($editState.id,form,()=>{
+      dispatch(getTasks($page));
+      setBusy(false);
+    }));
   }
 
   const onLogin = (values:any) => {
@@ -70,7 +78,9 @@ function App() {
 
   const tokenChecking = () => {
     setBusy(true);
-    dispatch(getTasks(1, "id", DirectionTypes.asc, () => {setBusy(false)}))
+    dispatch(getTasks(1, "id", DirectionTypes.asc, () => {
+      setBusy(false);
+    }))
     const localStorage = loadState();
     console.log(localStorage)
     if (localStorage) {
@@ -83,72 +93,92 @@ function App() {
     }
   }
 
-  useEffect((callback?:any) => {
+  useEffect(() => {
     tokenChecking();
   }, [])
 
   return (
     <Layout>
+
       <Header>
       <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
        {$loginState.login ? 
         <Menu.Item key="1">{$loginState.login}</Menu.Item>
         :<Menu.Item key="1" onClick={()=>{setLoginModal(true)}}>{"Sign Up"}</Menu.Item>}
-
         {$loginState.login && 
-          <Menu.Item key="2" onClick={()=>{dispatch(logout(()=>{setLoginModal(false)}))}}>Logout</Menu.Item>}
+          <Menu.Item key="2" 
+            onClick={()=>{
+              dispatch(logout(()=>{
+                setLoginModal(false)
+              }))}}>
+            Logout
+          </Menu.Item>}
        </Menu>
       </Header>
+
       <Content style={{ margin: "20px 20px" }}>
+
         <Button
           style={{ margin: "10px 10px" }}
           type="primary"
-          onClick={() => {setNewTaskModal(true)}}
-        >
+          onClick={() => {
+            setNewTaskModal(true);
+          }}>
           Create Task
         </Button>
+
         <NewTaskForm 
           visible={newTaskModal} 
           onCreate={onCreateTask} 
-          onCancel={() => {setNewTaskModal(false)}} />
+          onCancel={() => {
+            setNewTaskModal(false);
+            }} />
 
         <LoginForm 
           visible={loginModal} 
           onLogin={onLogin} 
-          onCancel={() => {setLoginModal(false)}} />
+          onCancel={() => {
+            setLoginModal(false);
+            }} />
 
         <EditTaskForm 
           visible={ editTaskModal }
           data={$editState}
           onSubmit={onEditTask}
           busy={busy}
-          onCancel={() => {setEditTaskModal(false);}} />
+          onCancel={() => {
+            setEditTaskModal(false);
+            }} />
+
         <TaskTable
           tasks={$tasks}
           page={$page}
           total={$total}
           busy={busy}
           onRow={(record, rowIndex)=>{
-            if ($loginState.login)
             return {
               onClick: (event:Event)=>{
-                dispatch(editTaskAction(record))
-                setEditTaskModal(true);
+                if ($loginState.login){
+                  dispatch(editTaskAction(record));
+                  setEditTaskModal(true);
+                } else {
+                  dispatch(alertAction({
+                    message: "Information", 
+                    type: "info", 
+                    description: "You are not allowed to edit tasks. Please Log in."}));
+                }
               }
             }
           }}
           onTableChange={onTableChange} />
-        {/* <Alert
-          style={{
-            position: "fixed",
-            top: "80px",
-            left: "33%",
-            width: "33%"
-          }}
-          message="Success"
-          type="success"
-          showIcon={true}
-        /> */}
+
+        {$alertState.message &&
+          <AlertMessage
+          message={$alertState.message}
+          type={$alertState.type}
+          description={$alertState.description}
+
+        />}
       </Content>
     </Layout>
   );

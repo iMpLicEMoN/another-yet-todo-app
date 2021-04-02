@@ -1,12 +1,12 @@
 import { DirectionTypes, DirectionTypesShort, statusType, Credentials } from '../types'
-import { getTasksAction, createTaskAction, editTaskAction, loginAction, logoutAction } from '../store/actions'
+import { getTasksAction, createTaskAction, editTaskAction, loginAction, logoutAction, alertAction } from '../store/actions'
 import { loadState, saveState } from "../utils/localStorage";
-
+ 
 const beType = 'https';
 const beIPAddress = 'uxcandy.com';
 export const beEnv = 'development'
 export const bePort = '443';
-const beDevName = 'Mukhtar';
+const beDevName = 'Name';
 export const beServiceNames = {
 	getTasks: '/',
 	createTask: '/create',
@@ -35,7 +35,7 @@ export const getTasks = (page: number = 1, field: string = "id", direction: Dire
 			referrerPolicy: 'no-referrer'
 		}).then((res) => {return res.json();})
 		.then((data) => {
-			dispatch(getTasksAction({ ...data.message, page: page }))
+			dispatch(getTasksAction({ ...data.message, page: page }));
 			if (callback) callback(data);
 		})
 	}
@@ -53,6 +53,10 @@ export const createTask = (form:FormData, callback?:any): any => {
 			body: form
 		}).then((res) => {return res.json();})
 		.then((data) => {
+			dispatch(alertAction({
+				message: "Success", 
+				type: "success", 
+				description: "New task was created"}));
 			if (callback) callback(data);
 		})
 	}
@@ -70,6 +74,10 @@ export const editTask = (id:string, form:FormData, callback?:any): any => {
 			body: form
 		}).then((res) => {return res.json();})
 		.then((data) => {
+			dispatch(alertAction({
+				message: "Success", 
+				type: "success", 
+				description: "Task was successfully edited"}));
 			if (callback) callback(data);
 		})
 	}
@@ -88,8 +96,17 @@ export const login = (form: FormData, callback?:any): any => {
 		}).then((res) => {return res.json();})
 		.then((data) => {
 			if (data.message.token){
-			 saveState({username: form.get("username"), token: data.message.token, timeStamp: new Date().getTime()});
-			 dispatch(loginAction({token: data.message.token, username: form.get("username")}))
+				saveState({username: form.get("username"), token: data.message.token, timeStamp: new Date().getTime()});
+				dispatch(alertAction({
+					message: "Success", 
+					type: "success", 
+					description: "You are logged in"}));
+				dispatch(loginAction({token: data.message.token, username: form.get("username")}))
+			} else {
+				dispatch(alertAction({
+					message: "Error", 
+					type: "error", 
+					description: "User not exist or password not match"}));
 			}
 			if (callback) callback(data);
 		})
@@ -99,6 +116,10 @@ export const login = (form: FormData, callback?:any): any => {
 export const logout = (callback?:any): any => {
 	return (dispatch: any) => {
 		dispatch(logoutAction());
+		dispatch(alertAction({
+			message: "Success", 
+			type: "success", 
+			description: "Logging out. Goodbye"}));
 		saveState({});
 		if (callback) callback();
 	}

@@ -4,6 +4,7 @@ export enum ActionTypes {
 	TASKS_GET = "TASKS_GET",
 	USER_LOGIN = "USER_LOGIN",
 	USER_LOGOUT = "USER_LOGOUT",
+	ALERT_SHOW = "ALERT_SHOW",
 }
 
 export type statusType = 0|1|10|11;
