@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Radio, Badge } from "antd";
-import { StatusText, StatusColor } from "../types"
+import React, { useEffect } from 'react';
+import { Modal, Form, Input, Radio, Badge } from 'antd';
+import { StatusText, StatusColor } from '../types';
 
-interface EditTaskForm {
+interface EditTaskFormType {
   visible: boolean;
   data:any;
   busy:boolean;
@@ -16,7 +16,7 @@ const radioStyle = {
   lineHeight: '30px',
 };
 
-const EditTaskForm: React.FC<EditTaskForm> = ({
+const EditTaskForm: React.FC<EditTaskFormType> = ({
   visible,
   data,
   busy,
@@ -27,12 +27,12 @@ const EditTaskForm: React.FC<EditTaskForm> = ({
   const [form] = Form.useForm();
   useEffect(()=>{
     form.setFieldsValue(data);
-  },[data])
+  },[data, form]);
   
   return (
     <Modal
       visible={visible}
-      title={"Edit task "+data.id}
+      title={'Edit task '+data.id}
       okText="Submit"
       confirmLoading={busy}
       cancelText="Cancel"
@@ -45,7 +45,7 @@ const EditTaskForm: React.FC<EditTaskForm> = ({
             onSubmit(values);
           })
           .catch((info) => {
-            console.log("Validate Failed:", info);
+            console.log('Validate Failed:', info);
           });
       }}
     >
@@ -53,10 +53,8 @@ const EditTaskForm: React.FC<EditTaskForm> = ({
         form={form}
         layout="vertical"
         name="form_in_modal"
-        // fields={[data]}
-        // initialValues={data}
       >
-        <Form.Item name="status" label="Status" rules={[{ required: true, message: "Please select status!" }]}>
+        <Form.Item name="status" label="Status" rules={[{ required: true, message: 'Please select status!' }]}>
           <Radio.Group>
             <Radio style={radioStyle} value={0}>
               <Badge color={StatusColor[0]} text={StatusText[0]} />
@@ -73,7 +71,7 @@ const EditTaskForm: React.FC<EditTaskForm> = ({
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item name="text" label="Text" rules={[{ required: true, message: "Please input task description" }]}>
+        <Form.Item name="text" label="Text" rules={[{ required: true, message: 'Please input task description' }]}>
           <Input type="textarea"/>
         </Form.Item>
       </Form>

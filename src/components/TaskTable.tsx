@@ -2,8 +2,8 @@ import React from 'react';
 import { Table, Avatar, Badge } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import 'antd/dist/antd.css';
-import { Task } from '../types'
-import { StatusText, StatusColor } from "../types"
+import { Task } from '../types';
+import { StatusText, StatusColor } from '../types';
 
 const columns: ColumnsType<Task> = [
   {
@@ -25,9 +25,9 @@ const columns: ColumnsType<Task> = [
         size={64}
         style={{ margin: 10 }}
         src={item.image_path} />
-        <div style={{ margin: "0 10px" }}>
-          {prop}
-        </div>
+      <div style={{ margin: '0 10px' }}>
+        {prop}
+      </div>
       </div>
   },
   {
@@ -96,6 +96,6 @@ const TaskTable: React.FC<TaskTableType> = ({
       dataSource={tasks} >
     </Table>
   );
-}
+};
 
 export default TaskTable;
