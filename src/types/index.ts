@@ -41,14 +41,32 @@ export interface TasksState {
 	tasks: Task[];
 }
 
-export interface TaskAction {
+export interface LoginState {
+	username: string,
+	token: string|Blob,
+	timeStamp?: number,
+}
+
+export interface EditTaskState {
+	id: string,
+	text: string,
+	status: number,
+}
+
+export interface AlertState {
+	message: string,
+	type: alertsType,
+	description: string,
+}
+
+export interface ReduxAction {
 	type: ActionTypes;
-	payload?: any;
+	payload?: TasksState|LoginState|EditTaskState|AlertState;
 }
 
 export interface Credentials {
 	login: string;
-	password: any;
+	password: string;
 }
 
 export interface Task {

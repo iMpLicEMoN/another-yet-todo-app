@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Layout, Button, Menu } from 'antd';
 import TaskTable from '../components/TaskTable';
 import AlertMessage from '../components/AlertMessage';
@@ -7,10 +7,12 @@ import EditTaskForm from '../components/EditTaskForm';
 import LoginForm from '../components/LoginForm';
 import { getTasks, createTask, editTask, login, logout, tokenLifeTime } from '../api';
 import { loginAction, editTaskAction, alertAction } from '../store/actions';
-import { Task, DirectionTypes, NewTaskValues } from '../types';
+import { Task, DirectionTypes, NewTaskValues, LoginState, EditTaskState, AlertState } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/reducers';
 import { loadState, saveState } from '../utils/localStorage';
+import { TablePaginationConfig } from 'antd/es/table';
+import { GetComponentProps } from 'rc-table/es/interface';
 
 const App = ():JSX.Element => {
   const { Header, Content } = Layout;
@@ -18,18 +20,22 @@ const App = ():JSX.Element => {
   const $tasks = useSelector<RootState, Task[]>((state) => state.taskState.tasks);
   const $page = useSelector<RootState, number>((state) => state.taskState.page);
   const $total = useSelector<RootState, number>((state) => state.taskState.total_task_count);
-  const $loginState = useSelector<RootState, any>((state) => state.loginState);
-  const $editState = useSelector<RootState, any>((state) => state.editState);
-  const $alertState = useSelector<RootState, any>((state) => state.alertState);
+  const $loginState = useSelector<RootState, LoginState>((state) => state.loginState);
+  const $editState = useSelector<RootState, EditTaskState>((state) => state.editState);
+  const $alertState = useSelector<RootState, AlertState>((state) => state.alertState);
 
   const [busy, setBusy] = useState<boolean>(false);
   const [loginModal, setLoginModal] = useState<boolean>(false);
   const [newTaskModal, setNewTaskModal] = useState<boolean>(false);
   const [editTaskModal, setEditTaskModal] = useState<boolean>(false);
-
-  const onTableChange = (pagination: any, filters: any, sorter: any) => {
+  
+  const onTableChange = (
+    pagination:TablePaginationConfig, 
+    filters: Record<string, (boolean | React.Key)[] | null>, 
+    sorter: Record<React.Key, any>
+  ) => {
     const newPage: number = pagination.current || 1,
-      newField: string = sorter.field || 'id',
+      newField: string = sorter.field?.toString() || 'id',
       newDirection: DirectionTypes = sorter.order ?
         sorter.order.includes(DirectionTypes.asc)
           ? DirectionTypes.asc
@@ -39,6 +45,22 @@ const App = ():JSX.Element => {
     dispatch(getTasks(newPage, newField, newDirection, () => {
       setBusy(false);
     }));
+  };
+
+  const onRow:GetComponentProps<Task> = (record, rowIndex)=>{
+    return {
+      onClick: ()=>{
+        if ($loginState.username){
+          dispatch(editTaskAction(record as unknown as EditTaskState));
+          setEditTaskModal(true);
+        } else {
+          dispatch(alertAction({
+            message: 'Information', 
+            type: 'info', 
+            description: 'You are not allowed to edit tasks. Please Log in.'}));
+        }
+      }
+    };
   };
 
   const onCreateTask = ({username, email, text}:NewTaskValues)=>{
@@ -54,7 +76,7 @@ const App = ():JSX.Element => {
     }));
   };
 
-  const onEditTask = ({text, status}:any)=>{
+  const onEditTask = ({text, status}:{text:string, status:string})=>{
     setBusy(true);
     setEditTaskModal(false);
     const form = new FormData();
@@ -67,16 +89,16 @@ const App = ():JSX.Element => {
     }));
   };
 
-  const onLogin = (values:any) => {
+  const onLogin = ({username, password}:{username:string, password:string}) => {
     const form = new FormData();
-    form.append('username', values.username);
-    form.append('password', values.password);
-    dispatch(login(form, (data:any)=>{
+    form.append('username', username);
+    form.append('password', password);
+    dispatch(login(form, ()=>{
       setLoginModal(false);
     }));
   };
 
-  function tokenChecking () {
+  function tokenChecking(){
     setBusy(true);
     dispatch(getTasks(1, 'id', DirectionTypes.asc, () => {
       setBusy(false);
@@ -102,17 +124,18 @@ const App = ():JSX.Element => {
 
       <Header>
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
-          {$loginState.login ? 
-            <Menu.Item key="1">{$loginState.login}</Menu.Item>
-            :<Menu.Item key="1" onClick={()=>{setLoginModal(true);}}>{'Sign Up'}</Menu.Item>}
-          {$loginState.login && 
-          <Menu.Item key="2" 
-            onClick={()=>{
-              dispatch(logout(()=>{
-                setLoginModal(false);
-              }));}}>
-            Logout
-          </Menu.Item>}
+          {$loginState.username ? 
+            <Menu.Item key="1">{$loginState.username}</Menu.Item>
+            :<Menu.Item key="2" onClick={()=>{setLoginModal(true);}}>{'Sign Up'}</Menu.Item>}
+          {$loginState.username ?
+            <Menu.Item 
+              key="3" 
+              onClick={()=>{
+                dispatch(logout(()=>{
+                  setLoginModal(false);
+                }));}}>
+              Logout
+            </Menu.Item>:undefined}
         </Menu>
       </Header>
 
@@ -155,22 +178,8 @@ const App = ():JSX.Element => {
           page={$page}
           total={$total}
           busy={busy}
-          onRow={(record, rowIndex)=>{
-            return {
-              onClick: (event:Event)=>{
-                if ($loginState.login){
-                  dispatch(editTaskAction(record));
-                  setEditTaskModal(true);
-                } else {
-                  dispatch(alertAction({
-                    message: 'Information', 
-                    type: 'info', 
-                    description: 'You are not allowed to edit tasks. Please Log in.'}));
-                }
-              }
-            };
-          }}
-          onTableChange={onTableChange} />
+          onRow={onRow}
+          onChange={onTableChange} />
 
         {$alertState.message &&
           <AlertMessage

@@ -1,6 +1,8 @@
-import { DirectionTypes, DirectionTypesShort, statusType, Credentials } from '../types';
-import { getTasksAction, createTaskAction, editTaskAction, loginAction, logoutAction, alertAction } from '../store/actions';
-import { loadState, saveState } from '../utils/localStorage';
+import { DirectionTypes, DirectionTypesShort } from '../types';
+import { getTasksAction, loginAction, logoutAction, alertAction } from '../store/actions';
+import { saveState } from '../utils/localStorage';
+import { Dispatch } from 'react';
+import { AnyAction } from 'redux';
  
 const beType = 'https';
 const beIPAddress = 'uxcandy.com';
@@ -21,8 +23,8 @@ export const config = {
   beServiceNames: beServiceNames
 };
 
-export const getTasks = (page = 1, field = 'id', direction: DirectionTypes = DirectionTypes.asc, callback?: any): any => {
-  return (dispatch: any) => {
+export const getTasks = (page = 1, field = 'id', direction: DirectionTypes = DirectionTypes.asc, callback?:CallableFunction):CallableFunction => {
+  return (dispatch:Dispatch<AnyAction>) => {
     fetch(`${beString}${beServiceNames.getTasks}?developer=${beDevName}&page=${page}&sort_field=${field}&sort_direction=${DirectionTypesShort[direction]}`, {
       method: 'GET',
       mode: 'cors',
@@ -41,8 +43,8 @@ export const getTasks = (page = 1, field = 'id', direction: DirectionTypes = Dir
   };
 };
 
-export const createTask = (form:FormData, callback?:any): any => {
-  return (dispatch: any) => {
+export const createTask = (form:FormData, callback?:CallableFunction):CallableFunction => {
+  return (dispatch:Dispatch<AnyAction>) => {
     fetch(`${beString}${beServiceNames.createTask}?developer=${beDevName}`, {
       method: 'POST',
       mode: 'cors',
@@ -62,8 +64,8 @@ export const createTask = (form:FormData, callback?:any): any => {
   };
 };
 
-export const editTask = (id:string, form:FormData, callback?:any): any => {
-  return (dispatch: any) => {
+export const editTask = (id:string, form:FormData, callback?:CallableFunction):CallableFunction => {
+  return (dispatch:Dispatch<AnyAction>) => {
     fetch(`${beString}${beServiceNames.editTask}/${id}?developer=${beDevName}`, {
       method: 'POST',
       mode: 'cors',
@@ -83,8 +85,9 @@ export const editTask = (id:string, form:FormData, callback?:any): any => {
   };
 };
 
-export const login = (form: FormData, callback?:any): any => {
-  return (dispatch: any) => {
+export const login = (form: FormData, callback?:CallableFunction):CallableFunction => {
+  const username = form.get('username')?.toString()||'';
+  return (dispatch:Dispatch<AnyAction>) => {
     fetch(`${beString}${beServiceNames.login}?developer=${beDevName}`, {
       method: 'POST',
       mode: 'cors',
@@ -96,12 +99,12 @@ export const login = (form: FormData, callback?:any): any => {
     }).then((res) => {return res.json();})
       .then((data) => {
         if (data.message.token){
-          saveState({username: form.get('username'), token: data.message.token, timeStamp: new Date().getTime()});
+          saveState({username: username, token: data.message.token, timeStamp: new Date().getTime()});
           dispatch(alertAction({
             message: 'Success', 
             type: 'success', 
             description: 'You are logged in'}));
-          dispatch(loginAction({token: data.message.token, username: form.get('username')}));
+          dispatch(loginAction({token: data.message.token, username: username}));
         } else {
           dispatch(alertAction({
             message: 'Error', 
@@ -113,8 +116,8 @@ export const login = (form: FormData, callback?:any): any => {
   };
 };
 
-export const logout = (callback?:any): any => {
-  return (dispatch: any) => {
+export const logout = (callback?:CallableFunction):CallableFunction => {
+  return (dispatch:Dispatch<AnyAction>) => {
     dispatch(logoutAction());
     dispatch(alertAction({
       message: 'Success', 

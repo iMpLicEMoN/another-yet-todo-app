@@ -2,7 +2,7 @@ import { Form, Input, Button, Modal } from 'antd';
 
 interface LoginFormType {
   visible: boolean;
-  onLogin: (values:any) => void;
+  onLogin: ({username, password}:{username:string, password:string}) => void;
   onCancel: () => void;
 }
 
@@ -16,13 +16,6 @@ const LoginForm:React.FC<LoginFormType> = ({
   onLogin,
   onCancel,
 }) => {
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
 
   const [form] = Form.useForm();
   return (
@@ -55,8 +48,6 @@ const LoginForm:React.FC<LoginFormType> = ({
         id="login-form"
         name="basic"
         initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
       >
         <Form.Item
           label="Username"

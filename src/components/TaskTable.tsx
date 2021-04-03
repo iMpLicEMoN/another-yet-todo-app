@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Avatar, Badge } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType, TableProps } from 'antd/es/table';
 import 'antd/dist/antd.css';
 import { Task } from '../types';
 import { StatusText, StatusColor } from '../types';
@@ -19,6 +19,7 @@ const columns: ColumnsType<Task> = [
     dataIndex: 'username',
     sorter: true,
     width: 100,
+    responsive: ['sm'],
     render: (prop, item) =>
       <div><Avatar
         shape="square"
@@ -36,12 +37,13 @@ const columns: ColumnsType<Task> = [
     dataIndex: 'email',
     sorter: true,
     width: 200,
+    responsive: ['sm'],
   },
   {
     key: 'text',
     title: 'Task',
     dataIndex: 'text',
-    sorter: true
+    sorter: true,
   },
   {
     key: 'status',
@@ -54,15 +56,11 @@ const columns: ColumnsType<Task> = [
   }
 ];
 
-type status = 0|1|10|11;
-
-interface TaskTableType {
+interface TaskTableType extends TableProps<Task> {
   tasks: Task[];
   page: number;
   total: number;
   busy: boolean;
-  onTableChange: (pagination: any, filters: any, sorter: any) => void;
-  onRow: (record:any, rowIndex:any) => any;
 }
 
 const TaskTable: React.FC<TaskTableType> = ({
@@ -70,7 +68,7 @@ const TaskTable: React.FC<TaskTableType> = ({
   page,
   total,
   busy,
-  onTableChange,
+  onChange,
   onRow,
 }) => {
 
@@ -80,7 +78,7 @@ const TaskTable: React.FC<TaskTableType> = ({
       columns={columns}
       size="small"
       onRow={onRow}
-      onChange={onTableChange}
+      onChange={onChange}
       pagination={{
         defaultPageSize: 3,
         current: page,

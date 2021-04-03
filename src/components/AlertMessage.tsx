@@ -25,7 +25,7 @@ const AlertMessage: React.FC<AlertMessageType> = ({
   const dispatch = useDispatch();
   useEffect(() => {
     setTimeout(() => {
-      dispatch(alertAction({ message: '', status: '', description: '' }));
+      dispatch(alertAction({ message: '', type: undefined, description: '' }));
     }, 5000);
   }, [dispatch]);
   return <Alert

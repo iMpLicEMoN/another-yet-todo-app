@@ -1,23 +1,19 @@
-import {TasksState, TaskAction, ActionTypes} from '../../types';
+import { ReduxAction, ActionTypes, AlertState} from '../../types';
 
-const initState = {
+const initState:AlertState = {
   message: '',
-  type: '',
+  type: undefined,
   description: '',
 };
 
-export const alertReducer = (state = initState, action:any) => {
-  console.log(action);
+export const alertReducer = (state = initState, action:ReduxAction):AlertState => {
   switch (action.type) {   
   case ActionTypes.ALERT_SHOW: return {
     ...state,
-    message: action.payload?.message,
-    type: action.payload?.type,
-    description: action.payload?.description,
+    ...action.payload,
   };
 
   default: 
     return state;
   }
-	
 };

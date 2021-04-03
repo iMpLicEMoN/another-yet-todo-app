@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Radio, Badge } from 'antd';
-import { StatusText, StatusColor } from '../types';
+import { StatusText, StatusColor, EditTaskState } from '../types';
 
 interface EditTaskFormType {
   visible: boolean;
-  data:any;
+  data:EditTaskState;
   busy:boolean;
-  onSubmit: (values: any) => void;
+  onSubmit: ({text, status}:{text:string, status:string}) => void;
   onCancel: () => void;
 }
 

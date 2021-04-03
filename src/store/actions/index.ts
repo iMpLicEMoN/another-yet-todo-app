@@ -1,41 +1,41 @@
-import {Task, TasksState, TaskAction, ActionTypes} from '../../types';
+import {
+  TasksState, 
+  LoginState, 
+  EditTaskState, 
+  AlertState, 
+  ReduxAction, 
+  ActionTypes
+} from '../../types';
 
-export const getTasksAction = (payload:TasksState):TaskAction => {
+export const getTasksAction = (payload:TasksState):ReduxAction => {
   return {
     type: ActionTypes.TASKS_GET,
     payload: payload
   };
 };
 
-export const createTaskAction = (payload:Task):TaskAction => {
-  return {
-    type: ActionTypes.TASK_CREATE,
-    payload: payload
-  };
-};
-
-export const editTaskAction = (payload:any):any => {
+export const editTaskAction = (payload:EditTaskState):ReduxAction => {
   return {
     type: ActionTypes.TASK_EDIT,
     payload: payload
   };
 };
 
-export const loginAction = (payload:any):any => {
+export const loginAction = (payload:LoginState):ReduxAction => {
   return {
     type: ActionTypes.USER_LOGIN,
     payload: payload
   };
 };
 
-export const logoutAction = (payload?:any):any => {
+export const logoutAction = (payload?:LoginState):ReduxAction => {
   return {
     type: ActionTypes.USER_LOGOUT,
     payload: payload
   };
 };
 
-export const alertAction = (payload?:any) => {
+export const alertAction = (payload?:AlertState):ReduxAction => {
   return {
     type: ActionTypes.ALERT_SHOW,
     payload: payload

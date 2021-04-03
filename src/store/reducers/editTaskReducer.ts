@@ -1,23 +1,19 @@
-import { ActionTypes } from '../../types';
+import { ActionTypes, EditTaskState, ReduxAction } from '../../types';
 
-const initState = {
+const initState:EditTaskState = {
   id: '',
   text: '',
   status: 0,
 };
 
-export const editTaskReducer = (state = initState, action:any) => {
-  console.log(action);
+export const editTaskReducer = (state = initState, action:ReduxAction):EditTaskState => {
   switch (action.type) {   
   case ActionTypes.TASK_EDIT: return {
     ...state,
-    id: action.payload?.id,
-    text: action.payload?.text,
-    status: action.payload?.status,
+    ...action.payload,
   };
 
   default: 
     return state;
   }
-	
 };

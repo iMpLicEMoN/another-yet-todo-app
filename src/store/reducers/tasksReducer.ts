@@ -1,20 +1,17 @@
-import {TasksState, TaskAction, ActionTypes} from '../../types';
+import {TasksState, ReduxAction, ActionTypes} from '../../types';
 
-const initState = {
+const initState:TasksState = {
   total_task_count: 0,
   page: 1,
   tasks: [],
-} as TasksState;
+};
 
-export const taskReducer = (state = initState, action:TaskAction):TasksState => {
-  console.log(action);
+export const taskReducer = (state = initState, action:ReduxAction):TasksState => {
   switch (action.type) {   
   case ActionTypes.TASKS_GET: return {
     ...state,
-    tasks: action.payload?.tasks,
-    total_task_count: action.payload?.total_task_count,
-    page: action.payload?.page,
-  } as TasksState;
+    ...action.payload,
+  };
 
   default: 
     return state;
