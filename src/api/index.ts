@@ -37,7 +37,7 @@ export const getTasks = (page = 1, field = 'id', direction: DirectionTypes = Dir
       referrerPolicy: 'no-referrer'
     }).then((res) => {return res.json();})
       .then((data) => {
-        dispatch(getTasksAction({ ...data.message, page: page }));
+        dispatch(getTasksAction({ ...data.message, page: page, sorter:{field:field, direction:direction} }));
         if (callback) callback(data);
       });
   };

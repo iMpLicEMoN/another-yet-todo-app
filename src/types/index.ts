@@ -38,6 +38,10 @@ export enum DirectionTypesShort {
 export interface TasksState {
 	total_task_count: number;
 	page: number;
+	sorter:{
+		field:string, 
+		direction:DirectionTypes,
+	};
 	tasks: Task[];
 }
 

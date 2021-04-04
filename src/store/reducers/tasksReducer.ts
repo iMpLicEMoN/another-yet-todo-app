@@ -1,8 +1,12 @@
-import {TasksState, ReduxAction, ActionTypes} from '../../types';
+import {TasksState, ReduxAction, ActionTypes, DirectionTypes} from '../../types';
 
 const initState:TasksState = {
   total_task_count: 0,
   page: 1,
+  sorter:{
+    field:'id', 
+    direction:DirectionTypes.asc,
+  },
   tasks: [],
 };
 

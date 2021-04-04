@@ -20,6 +20,8 @@ const App = ():JSX.Element => {
   const $tasks = useSelector<RootState, Task[]>((state) => state.taskState.tasks);
   const $page = useSelector<RootState, number>((state) => state.taskState.page);
   const $total = useSelector<RootState, number>((state) => state.taskState.total_task_count);
+  const $sortField = useSelector<RootState, string>((state) => state.taskState.sorter.field);
+  const $sortDirection = useSelector<RootState, DirectionTypes>((state) => state.taskState.sorter.direction);
   const $loginState = useSelector<RootState, LoginState>((state) => state.loginState);
   const $editState = useSelector<RootState, EditTaskState>((state) => state.editState);
   const $alertState = useSelector<RootState, AlertState>((state) => state.alertState);
@@ -71,7 +73,7 @@ const App = ():JSX.Element => {
     form.append('email', email);
     form.append('text', text);
     dispatch(createTask(form,()=>{
-      dispatch(getTasks($page));
+      dispatch(getTasks($page, $sortField, $sortDirection));
       setBusy(false);
     }));
   };
@@ -84,7 +86,7 @@ const App = ():JSX.Element => {
     form.append('status', status);
     form.append('token', $loginState.token);
     dispatch(editTask($editState.id,form,()=>{
-      dispatch(getTasks($page));
+      dispatch(getTasks($page, $sortField, $sortDirection));
       setBusy(false);
     }));
   };
